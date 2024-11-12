@@ -10,6 +10,7 @@
 	<PackageReference Include="Microsoft.Orleans.Runtime" Version="8.2.0" />
 	<PackageReference Include="Microsoft.Orleans.Sdk" Version="8.2.0" />
 	<PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureOpenAI" Version="1.28.0" />
+	<PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>

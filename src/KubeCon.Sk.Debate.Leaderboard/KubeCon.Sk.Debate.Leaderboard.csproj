@@ -16,14 +16,16 @@
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.38.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0-rc.2.24474.3" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
     <PackageReference Include="MudBlazor" Version="8.0.0-preview.4" />
 	<PackageReference Include="Microsoft.Orleans.Sdk" Version="8.2.0" />
 	<PackageReference Include="Microsoft.Orleans.Server" Version="8.2.0" />
-	<PackageReference Include="Aspire.Azure.Storage.Blobs" Version="9.0.0-rc.1.24511.1" />
-	<PackageReference Include="Aspire.Azure.Data.Tables" Version="9.0.0-rc.1.24511.1" />
+	<PackageReference Include="Aspire.Azure.Storage.Blobs" Version="9.0.0" />
+	<PackageReference Include="Aspire.Azure.Data.Tables" Version="9.0.0" />
 	<PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="8.2.0" />
 	<PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="8.2.0" />
+	<PackageReference Include="System.Private.Uri" Version="4.3.2" />
+	<PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
