@@ -1,0 +1,363 @@
+﻿@page "/"
+@using KubeCon.Sk.Debate.Leaderboard.Hubs
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.SignalR.Client
+@using KubeCon.Sk.Debate.Abstractions
+@using KubeCon.Sk.Debate.Abstractions.Models
+@using MudBlazor
+@inject NavigationManager _navigationManager
+
+<PageTitle>Semantic Kernel Debate</PageTitle>
+
+@* @if (_debate != null)
+{ *@
+<MudGrid>
+    <MudItem xs="8">
+        <MudGrid>
+            @* @if (_debate != null)
+                {
+                    <MudItem xs="12">
+                        <MudPaper Class="mud-theme-primary d-flex align-center justify-center mud-width-full py-2">
+                            <MudText Typo="Typo.h4" Class="lucky">Round @(_debate.Turns.Count) of @_debate.Rounds</MudText>
+                        </MudPaper>
+                    </MudItem>
+                } *@
+
+            <MudItem xs="6">
+                <MudPaper Class="@($"{_agent1Theme} d-flex align-center justify-center mud-width-full py-1")">
+                    <MudStack Class="align-center">
+                        <MudText Typo="Typo.h4" Class="lucky">@_debate?.Debater1?.Name</MudText>
+                        <MudStack Row="true">
+                            @* <MudChip T="string" Class="banger" Icon="@Icons.Material.Filled.ThumbUp" Text="@($"{_debater1?.WinCount} Wins")" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Success"></MudChip>
+                            <MudChip T="string" Class="banger" Icon="@Icons.Material.Filled.ThumbDown" Text="@($"{_debater1?.LossCount} Losses")" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Error"></MudChip>
+                         *@
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="6">
+                <MudPaper Class="@($"{_agent2Theme} d-flex align-center justify-center mud-width-full py-1")">
+                    <MudStack Class="align-center">
+                        <MudText Typo="Typo.h4" Class="lucky">@_debate?.Debater2?.Name</MudText>
+                        <MudStack Row="true">
+                           @*  <MudChip T="string" Class="banger" Icon="@Icons.Material.Filled.ThumbUp" Text="@($"{_debater2?.WinCount} Wins")" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Success"></MudChip>
+                            <MudChip T="string" Class="banger" Icon="@Icons.Material.Filled.ThumbDown" Text="@($"{_debater2?.LossCount} Losses")" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Error"></MudChip>
+                         *@
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+
+            @* <MudItem xs="6">
+                    <MudPaper Class="d-flex align-center justify-center mud-width-full py-2" Outlined="true">
+                        @if (_turn == null || !_turn.Throws.Any())
+                        {
+                            <MudProgressCircular Color="Color.Primary" Style="height:280px;width:280px;" Indeterminate="true" Class="object-center" />
+                        }
+                        @if (!(_turn == null || !_turn.Throws.Any()))
+                        {
+                            @if (_turn.Winner != _debater1?.Name && _turn.Winner != _debater2?.Name)
+                            {
+                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[0].Play.ToString().ToLower()}.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
+                            }
+                            @if (_turn.Winner == _debater1?.Name)
+                            {
+                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[0].Play.ToString().ToLower()}-win.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
+                            }
+                            @if (_turn.Winner == _debater2?.Name)
+                            {
+                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[0].Play.ToString().ToLower()}-lose.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
+                            }
+                        }
+                    </MudPaper>
+                </MudItem> *@
+
+            @*  <MudItem xs="6">
+                    <MudPaper Class="d-flex align-center justify-center mud-width-full py-2" Outlined="true">
+                        @if (_turn == null || !_turn.Throws.Any())
+                        {
+                            <MudProgressCircular Color="Color.Primary" Style="height:280px;width:280px;" Indeterminate="true" Class="object-center" />
+                        }
+                        @if (!(_turn == null || !_turn.Throws.Any()))
+                        {
+                            @if (_turn.Winner != _debater1?.Name && _turn.Winner != _debater2?.Name)
+                            {
+                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[1].Play.ToString().ToLower()}.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
+                            }
+                            @if (_turn.Winner == _debater2?.Name)
+                            {
+                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[1].Play.ToString().ToLower()}-win.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
+                            }
+                            @if (_turn.Winner == _debater1?.Name)
+                            {
+                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[1].Play.ToString().ToLower()}-lose.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
+                            }
+                        }
+                    </MudPaper>
+                </MudItem> *@
+
+            @* @for (int i = 0; i < _debate?.Rounds; i++)
+                {
+                    var index = i + 1;
+                    var player1Theme = "mud-theme-info";
+                    var player2Theme = "mud-theme-info";
+                    var player1Label = $"Round {index}";
+                    var player2Label = $"Round {index}";
+
+                    if (_debate.Turns.Count >= index)
+                    {
+                        if (string.IsNullOrEmpty(_debate.Turns[i].Winner))
+                        {
+                            player2Theme = "mud-theme-info";
+                            player1Theme = "mud-theme-info";
+                            player2Label = "Scoring...";
+                            player1Label = "Scoring...";
+                        }
+                        if (_debate.Turns[i].Winner == _debater1?.Name)
+                        {
+                            player1Theme = "mud-theme-success";
+                            player2Theme = "mud-theme-error";
+                            player1Label = "Winner";
+                            player2Label = "Loser";
+                        }
+                        if (_debate.Turns[i].Winner == _debater2?.Name)
+                        {
+                            player2Theme = "mud-theme-success";
+                            player1Theme = "mud-theme-error";
+                            player2Label = "Winner";
+                            player1Label = "Loser";
+                        }
+                        if (_debate.Turns[i].Winner != _debater1?.Name &&
+                        _debate.Turns[i].Winner != _debater2?.Name &&
+                        !string.IsNullOrEmpty(_debate.Turns[i].Winner))
+                        {
+                            player2Theme = "mud-theme-dark";
+                            player1Theme = "mud-theme-dark";
+                            player2Label = _debate.Turns[i].Winner;
+                            player1Label = _debate.Turns[i].Winner;
+                        }
+                    } 
+
+                    <MudItem xs="6">
+                        <MudPaper Class="@($"{player1Theme} d-flex align-center justify-center mud-width-full py-1")">
+                            <MudText Typo="Typo.h4" Class="banger">@player1Label</MudText>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem xs="6">
+                        <MudPaper Class="@($"{player2Theme} d-flex align-center justify-center mud-width-full py-1")">
+                            <MudText Typo="Typo.h4" Class="banger">@player2Label</MudText>
+                        </MudPaper>
+                    </MudItem>
+                } *@
+
+
+            <MudItem xs="6">
+                <MudPaper Class="mud-theme-primary d-flex align-center justify-center mud-width-full py-1">
+                    <MudStack Class="align-center">
+                        <MudText Typo="Typo.h4" Class="lucky">Grain Count : @_latestUpdate?.GrainsActive.ToString("N0")</MudText>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="6">
+                <MudPaper Class="mud-theme-primary d-flex align-center justify-center mud-width-full py-1">
+                    <MudStack Class="align-center">
+                        <MudText Typo="Typo.h4" Class="lucky">Server Statistics</MudText>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="6">
+                <MudPaper Elevation="0">
+                    <MudCard Elevation="1">
+                        <MudCardContent>
+                            <MudChart ChartType="ChartType.Line"
+                            Class="my-0 pa-0"
+                            ChartSeries="@Series"
+                            Width="100%"
+                            Height="100%"
+                            ChartOptions="@_options"></MudChart>
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="6">
+                @if (_latestUpdate != null)
+                {
+                    <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
+                        <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
+                            <MudText Typo="Typo.h5" Class="d-block pathway">Started</MudText>
+                        </MudPaper>
+                        <MudChip T="DateTime" Text="@($"{@_latestUpdate.DateStarted}")" Class="lucky" Style="font-size: 1.5em;" Variant="Variant.Filled" Color="Color.Info"></MudChip>
+                    </MudPaper>
+
+                    <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
+                        <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
+                            <MudText Typo="Typo.h5" Class="d-block pathway">Uptime</MudText>
+                        </MudPaper>
+                        <MudChip T="string" Text="@_latestUpdate.TimeUp.ToString("hh\\:mm\\:ss")" Class="lucky" Style="font-size: 1.5em;" Variant="Variant.Filled" Color="Color.Info"></MudChip>
+                    </MudPaper>
+
+                    <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
+                        <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
+                            <MudText Typo="Typo.h5" Class="d-block pathway">Games completed</MudText>
+                        </MudPaper>
+                        <MudChip T="string" Text="@_latestUpdate.DebatesCompleted.ToString("N0")" Class="lucky" Style="font-size: 1.5em;" Variant="Variant.Filled" Color="Color.Info"></MudChip>
+                    </MudPaper>
+                }
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+
+    <MudItem xs="4">
+        <MudPaper Class="mud-theme-primary d-flex align-center justify-center mud-width-full py-2 mb-2">
+            <MudText Typo="Typo.h4" Class="banger">Leaderboard</MudText>
+        </MudPaper>
+
+        @foreach (var player in _agentsOnline)
+        {
+            <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
+                <MudChip T="string" Text="@($"{player.PercentWon}%")" Class="lucky" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Info" SelectedColor="Color.Primary"></MudChip>
+                <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
+                    <MudText Typo="Typo.h5" Class="lucky">@player.Name</MudText>
+                </MudPaper>
+            </MudPaper>
+        }
+    </MudItem>
+
+    @if (_debate != null)
+    {
+        <MudTimeline TimelinePosition="TimelinePosition.Alternate" Modifiers="true" hidden="@(_debate.ChatHistory.Count == 0)">
+            @foreach (var message in _debate.ChatHistory)
+            {
+                @* Color="@GetColor(message.Author)" *@ 
+                <MudTimelineItem Size="Size.Medium" Elevation="0">
+                    <ItemContent>
+                        @* <MudAvatar>
+                            @if (message.Avatar.Equals("none"))
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Settings" />
+                            }
+                            else
+                            {
+                                <MudImage Src="@message.Avatar"></MudImage>
+                            }
+                        </MudAvatar> *@
+                        @* Color="@GetColor(message.Author)" *@
+                        <MudText  Typo="Typo.h6" GutterBottom="true">@message.Author</MudText>
+                        <MudText>@(new MarkupString(message.Content))</MudText>
+                    </ItemContent>
+                </MudTimelineItem>
+            }
+        </MudTimeline>
+    }
+</MudGrid>
+@* } *@
+
+@code
+{
+    Debate? _debate;
+    List<Agent> _agentsOnline = new();
+    string _agent1Theme = "mud-theme-info";
+    string _agent2Theme = "mud-theme-info";
+    string _signalrUrl = string.Empty;
+
+    public List<ChartSeries> Series = new List<ChartSeries>();
+    private List<double> _data = new();
+    SystemStatusUpdate? _latestUpdate;
+
+    private ChartOptions _options = new()
+        {
+            ShowLegend = false,
+            InterpolationOption = InterpolationOption.NaturalSpline,
+            LineStrokeWidth = 8
+        };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _signalrUrl = _navigationManager.ToAbsoluteUri("/hubs/leaderboard").AbsoluteUri;
+
+            var hubConnection = new HubConnectionBuilder()
+                .WithAutomaticReconnect()
+                .WithUrl(_signalrUrl)
+                .Build();
+
+            for (int i = 0; i < 100; i++) _data.Add(0);
+
+            Series = new List<ChartSeries>()
+            {
+                new ChartSeries() { Name = "Grain Count", Data = _data.ToArray() }
+            };
+
+            hubConnection.On<Debate>("OnDebateStarted", (debate) =>
+            {
+                _agent1Theme = "mud-theme-info";
+                _agent2Theme = "mud-theme-info";
+                _debate = debate;
+                InvokeAsync(StateHasChanged);
+            });
+
+            hubConnection.On<Debate>("OnDebateCompleted", (debate) =>
+            {
+                _debate = debate;
+
+                // if (debate is not null)
+                // {
+                //     if (debate.Winner == _debater1?.Name)
+                //     {
+                //         _agent1Theme = "mud-theme-success";
+                //         _agent2Theme = "mud-theme-error";
+                //     }
+
+                //     if (debate.Winner == _debater2?.Name)
+                //     {
+                //         _agent2Theme = "mud-theme-success";
+                //         _agent1Theme = "mud-theme-error";
+                //     }
+
+                //     if (debate.Winner != _debater1?.Name && debate.Winner != _debater2?.Name)
+                //     {
+                //         _agent2Theme = "mud-theme-dark";
+                //         _agent1Theme = "mud-theme-dark";
+                //     }
+                // }
+
+                InvokeAsync(StateHasChanged);
+            });
+
+            hubConnection.On<ChatMessage>("OnDebateChatMessageAdded", message => {
+                _debate?.ChatHistory.Add(message);
+                InvokeAsync(StateHasChanged);
+            });
+
+            hubConnection.On<List<Agent>>("OnAgentsOnlineUpdated", (agentsOnline) =>
+            {
+                _agentsOnline = agentsOnline;
+                InvokeAsync(StateHasChanged);
+            });
+
+            hubConnection.On<SystemStatusUpdate>("OnSystemStatusUpdated", (update) =>
+            {
+                _latestUpdate = update;
+                _data.RemoveAt(0);
+                _data.Add(update.GrainsActive);
+
+                Series = new List<ChartSeries>() 
+                {
+                    new() { Name = "Grain Count", Data = _data.ToArray() }
+                };
+
+                InvokeAsync(StateHasChanged);
+            });
+
+            await hubConnection.StartAsync();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
