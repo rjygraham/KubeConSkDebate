@@ -13,10 +13,10 @@ public class Debate
     public List<ChatMessage> ChatHistory { get; set; } = new();
 
     [Id(3)]
-    public DateTime Started { get; set; } = DateTime.UtcNow;
+    public DateTime Started { get; set; } = DateTime.MinValue;
 
     [Id(4)]
-    public DateTime Ended { get; set; } = DateTime.MaxValue;
+    public DateTime Ended { get; set; } = DateTime.MinValue;
 
     [Id(5)]
     public AgentDescriptor? Moderator { get; set; }
@@ -32,4 +32,8 @@ public class Debate
 
     [Id(9)]
     public string? Winner { get; set; }
+
+    public bool IsReady => !string.IsNullOrWhiteSpace(Topic) && Moderator != null && Debater1 != null && Debater2 != null;
+
+    public bool IsComplete => !string.IsNullOrEmpty(Winner) && Ended != DateTime.MinValue;
 }

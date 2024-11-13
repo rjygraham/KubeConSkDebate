@@ -4,9 +4,13 @@ namespace KubeCon.Sk.Debate.Abstractions;
 
 public interface ILeaderboardGrainObserver : IGrainObserver
 {
-    Task OnDebateStarted(Models.Debate debate);
+    Task OnDebateTopicSelected(string topic);
 
-    Task OnDebateCompleted(Models.Debate debate);
+    Task OnDebateAgentsSelected(AgentDescriptor moderator, AgentDescriptor debater1, AgentDescriptor debater2);
+
+    Task OnDebateStarted(DateTime startTime);
+
+    Task OnDebateEnded(DateTime endTime);
 
     Task OnDebateChatMessageAdded(ChatMessage message);
 

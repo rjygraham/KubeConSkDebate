@@ -15,19 +15,28 @@ public class LeaderboardGrain(ILogger<LeaderboardGrain> logger) : Grain, ILeader
         return Task.CompletedTask;
     }
 
-    public async Task DebateStarted(Abstractions.Models.Debate debate)
+    public async Task DebateTopicSelected(string topic)
     {
-        await observers.Notify(observer => observer.OnDebateStarted(debate));
+        await observers.Notify(observer => observer.OnDebateTopicSelected(topic));
+    }
+    public async Task DebateAgentsSelected(AgentDescriptor moderator, AgentDescriptor debater1, AgentDescriptor debater2)
+    {
+        await observers.Notify(observer => observer.OnDebateAgentsSelected(moderator, debater1, debater2));
     }
 
-    public async Task DebateCompleted(Abstractions.Models.Debate debate)
+    public async Task DebateStarted(DateTime startTime)
     {
-        await observers.Notify(observer => observer.OnDebateCompleted(debate));
+        await observers.Notify(observer => observer.OnDebateStarted(startTime));
     }
 
     public async Task DebateChatMessageAdded(ChatMessage message)
     {
         await observers.Notify(observer => observer.OnDebateChatMessageAdded(message));
+    }
+
+    public async Task DebateEnded(DateTime endTime)
+    {
+        await observers.Notify(observer => observer.OnDebateEnded(endTime));
     }
 
     public Task UnSubscribe(ILeaderboardGrainObserver observer)
@@ -56,4 +65,6 @@ public class LeaderboardGrain(ILogger<LeaderboardGrain> logger) : Grain, ILeader
     {
         await observers.Notify(observer => observer.OnSystemStatusUpdated(update));
     }
+
+   
 }

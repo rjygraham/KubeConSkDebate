@@ -4,15 +4,19 @@ namespace KubeCon.Sk.Debate.Abstractions;
 
 public interface ILeaderboardGrain : IGrainWithGuidKey
 {
-    Task DebateStarted(Models.Debate debate);
-
-    Task DebateCompleted(Models.Debate debate);
-
-    Task DebateChatMessageAdded(ChatMessage message);
-
     Task Subscribe(ILeaderboardGrainObserver observer);
 
     Task UnSubscribe(ILeaderboardGrainObserver observer);
+
+    Task DebateTopicSelected(string topic);
+
+    Task DebateAgentsSelected(AgentDescriptor moderator, AgentDescriptor debater1, AgentDescriptor debater2);
+
+    Task DebateStarted(DateTime startTime);
+
+    Task DebateEnded(DateTime endTime);
+
+    Task DebateChatMessageAdded(ChatMessage message);
 
     Task LobbyUpdated(List<Agent> agentsInLobby);
 

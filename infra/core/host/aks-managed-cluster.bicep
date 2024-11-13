@@ -31,16 +31,23 @@ param enableAzureRbac bool = false
 @description('The Tenant ID associated to the Azure Active Directory')
 param aadTenantId string = tenant().tenantId
 
+@description('Kubernetes applications to access Azure cloud resources securely with Entra ID.')
+param enableWorkloadIdentity bool = true
+
 @description('The load balancer SKU to use for ingress into the AKS cluster')
 @allowed([ 'basic', 'standard' ])
 param loadBalancerSku string = 'standard'
+
+@description('Network dataplane used in the Kubernetes cluster.')
+@allowed([ 'azure', 'cilium' ])
+param networkDataplane string = 'azure'
 
 @description('Network plugin used for building the Kubernetes network.')
 @allowed([ 'azure', 'kubenet', 'none' ])
 param networkPlugin string = 'azure'
 
 @description('Network policy used for building the Kubernetes network.')
-@allowed([ 'azure', 'calico' ])
+@allowed([ 'azure', 'calico', 'cilium', 'none' ])
 param networkPolicy string = 'azure'
 
 @description('If set to true, getting static credentials will be disabled for this cluster.')
@@ -48,7 +55,11 @@ param disableLocalAccounts bool = false
 
 @description('The managed cluster SKU.')
 @allowed([ 'Free', 'Paid', 'Standard' ])
-param sku string = 'Free'
+param skuTier string = 'Free'
+
+@description('The name of a managed cluster SKU.')
+@allowed([ 'Base', 'Automatic' ])
+param skuName string = 'Base'
 
 @description('Configuration of AKS add-ons')
 param addOns object = {}
@@ -70,8 +81,8 @@ resource aks 'Microsoft.ContainerService/managedClusters@2023-10-02-preview' = {
     type: 'SystemAssigned'
   }
   sku: {
-    name: 'Base'
-    tier: sku
+    name: skuName
+    tier: skuTier
   }
   properties: {
     nodeResourceGroup: !empty(nodeResourceGroupName) ? nodeResourceGroupName : 'rg-mc-${name}'
@@ -88,6 +99,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2023-10-02-preview' = {
     ]
     networkProfile: {
       loadBalancerSku: loadBalancerSku
+      networkDataplane: networkDataplane
       networkPlugin: networkPlugin
       networkPolicy: networkPolicy
     }
@@ -96,6 +108,11 @@ resource aks 'Microsoft.ContainerService/managedClusters@2023-10-02-preview' = {
     ingressProfile: {
       webAppRouting: {
         enabled: webAppRoutingAddon
+      }
+    }
+    securityProfile: {
+      workloadIdentity: {
+        enabled: enableWorkloadIdentity
       }
     }
   }

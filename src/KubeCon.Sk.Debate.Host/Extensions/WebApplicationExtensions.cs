@@ -6,7 +6,7 @@ public static class WebApplicationExtensions
 {
     public static WebApplication MapDebateControllerEndpoints(this WebApplication app)
     {
-        app.MapGet("start", (DebateEngineStateController debateEngineController) => debateEngineController.Start())
+        app.MapPost("start", (DebateEngineStateController debateEngineController) => debateEngineController.Start())
            .WithOpenApi(operation =>
            {
                operation.Summary = "Starts the Debate Loop";
@@ -14,7 +14,7 @@ public static class WebApplicationExtensions
                return operation;
            });
 
-        app.MapGet("stop", (DebateEngineStateController debateEngineController) => debateEngineController.Stop())
+        app.MapPost("stop", (DebateEngineStateController debateEngineController) => debateEngineController.Stop())
            .WithOpenApi(operation =>
            {
                operation.Summary = "Stops the Debate Loop";
@@ -55,6 +55,15 @@ public static class WebApplicationExtensions
                operation.Summary = "Add user topic";
                operation.Description = "Add a user supplied debate topic.";
                operation.OperationId = "addTopic";
+               return operation;
+           });
+
+        app.MapPost("selectWinner", (DebateEngineStateController debateEngineController, string agentName) => debateEngineController.SelectWinner(agentName))
+           .WithOpenApi(operation =>
+           {
+               operation.Summary = "Select winning agent";
+               operation.Description = "Selects the winning debater agent based on the arguments they presented.";
+               operation.OperationId = "selectWinner";
                return operation;
            });
 

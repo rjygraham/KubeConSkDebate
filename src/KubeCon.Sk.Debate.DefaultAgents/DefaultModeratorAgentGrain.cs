@@ -65,14 +65,13 @@ public class DefaultModeratorAgentGrain(Kernel kernel, ILogger<DefaultModeratorA
 
                     if (chatResponse.NextAgent.Equals("end"))
                     {
-                        await debateGrain.AddChatMessageAsync(
+                        await debateGrain.EndDebateAsync(
                             new ChatMessage
                             {
                                 Author = nameof(DefaultModeratorAgentGrain),
                                 Content = chatResponse.Message,
                                 Role = ChatMessageAuthorRole.Assistant
-                            },
-                            debate.Moderator
+                            }
                         );
                     }
                     else

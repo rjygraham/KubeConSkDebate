@@ -10,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddSkDebateOrleans();
 
+builder.Services.AddHttpClient("debate-host", client => {
+    client.BaseAddress = new Uri(builder.Configuration.GetValue<string>("services:debate-host:https:0"));
+});
+
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
 // Add services to the container.

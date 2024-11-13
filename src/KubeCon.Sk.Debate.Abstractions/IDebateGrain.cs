@@ -8,16 +8,18 @@ public interface IDebateGrain : IGrainWithGuidKey
     [ReadOnly]
     ValueTask<Models.Debate> GetDebate();
 
-    Task SelectAgents();
+    Task SelectTopicAsync();
 
-    Task SetDebate(Models.Debate debate);
+    Task SelectAgentsAsync();
+
+    Task StartDebateAsync();
 
     [AlwaysInterleave]
-    Task Go();
+    Task DebateAsync();
 
     Task AddChatMessageAsync(ChatMessage message, AgentDescriptor nextAgent);
 
-    Task EndDebate(ChatMessage message);
+    Task EndDebateAsync(ChatMessage message);
 
-    Task SelectWinner(string agentName);
+    Task SelectWinnerAsync(string agentName);
 }

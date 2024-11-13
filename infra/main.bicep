@@ -39,7 +39,9 @@ var resourceToken = toLower(uniqueString(subscription().id, environmentName, loc
 // Example usage:
 //   tags: union(tags, { 'azd-service-name': apiServiceName })
 #disable-next-line no-unused-vars
-var apiServiceName = 'python-api'
+var debateHostName = 'debate-host'
+var leaderboarName = 'leaderboard'
+var defaultAgentsName = 'default-agents'
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -49,10 +51,145 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 }
 
 // Add resources to be provisioned below.
-// A full example that leverages azd bicep modules can be seen in the todo-python-mongo template:
-// https://github.com/Azure-Samples/todo-python-mongo/tree/main/infra
+module monitoring 'core/monitor/monitoring.bicep' = {
+  name: 'monitoring'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    logAnalyticsName: '${abbrs.logAnalyticsWorkspace}${resourceToken}'
+    applicationInsightsName: '${abbrs.applicationInsights}${resourceToken}'
+  }
+}
 
+// module keyVault 'core/security/keyvault.bicep' = {
+//   name: 'keyVault'
+//   scope: rg
+//   params: {
+//     location: location
+//     tags: tags
+//     name: '${abbrs.keyVaultVaults}${resourceToken}'
+//   }
+// }
 
+module storage 'core/storage/storage-account.bicep' = {
+  name: 'storage'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    name: '${abbrs.storageStorageAccounts}${resourceToken}'
+  }
+}
+
+module aoai 'core/ai/cognitiveservices.bicep' = {
+  name: 'aoai'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    name: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
+    deployments: [
+      {
+        name: 'gpt-40'
+        model: {
+          name: 'gpt-4o'
+          version: '2024-08-06'
+          format: 'OpenAI'
+        }
+        sku: {
+          name: 'GlobalStandard'
+          capacity: 450
+        }
+      }
+    ]
+  }
+}
+
+module containerRegistry 'core/host/container-registry.bicep' = {
+  name: 'containerRegistry'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    name: '${abbrs.containerRegistryRegistries}${resourceToken}'
+  }
+}
+
+// module aks 'core/host/aks-managed-cluster.bicep' = {
+//   scope: rg
+//   name: 'aks'
+//   params: {
+//     name: '${abbrs.kubernetesManagedClusters}${resourceToken}'
+//     skuName: 'Automatic'
+//     skuTier: 'Standard'
+//     kubernetesVersion: '1.31.1'
+//     enableRbac: true
+//     enableAad: true
+//     enableAzureRbac: true
+//     networkDataplane: 'cilium'
+//     networkPlugin: 'azure'
+//     networkPolicy: 'calico'
+//     workspaceId: monitoring.outputs.logAnalyticsWorkspaceId
+//     webAppRoutingAddon: true
+//     systemPoolConfig: {
+//       name: 'systempool'
+//       count: 3
+//       mode: 'System'
+//       vmSize: 'Standard_D4ds_v5'
+//       availabilityZones: ['1', '3']
+//     }
+//   }
+// }
+
+module aks 'core/host/aks-automatic-cluster.bicep' = {
+  scope: rg
+  name: 'aks'
+  params: {
+    name: '${abbrs.kubernetesManagedClusters}${resourceToken}'
+    location: location
+    tags: tags
+    clusterSku: {
+      name: 'Automatic'
+      tier: 'Standard'
+    }
+    enableRBAC: true
+    nodeProvisioningProfile: {
+      mode: 'Auto'
+    }
+    disableLocalAccounts: true
+    azureRbac: true
+    upgradeChannel: 'stable'
+    nodeOSUpgradeChannel: 'NodeImage'
+    supportPlan: 'KubernetesOfficial'
+    enableContainerInsights: true
+    omsAgentAddon: {
+      enabled: true
+      config: {
+          logAnalyticsWorkspaceResourceID: monitoring.outputs.logAnalyticsWorkspaceId
+          useAADAuth: 'true'
+      }
+    }
+  }
+}
+
+module aksAcrAccess 'core/security/registry-access.bicep' = {
+  scope: rg
+  name: 'aksAcrAccess'
+  params: {
+    containerRegistryName: containerRegistry.outputs.name
+    principalId: aks.outputs.clusterIdentity.objectId
+  }
+}
+
+// module cloudNativeMonitoring 'core/monitor/cloud-native.bicep' = {
+//   scope: rg
+//   name: 'cloudNativeMonitoring'
+//   params: {
+//     grafanaDashbboardName: '${abbrs.grafanaDashboards}${resourceToken}'
+//     monitorWorkspaceName: '${abbrs.monitorWorkspaces}${resourceToken}'
+//   }
+// }
 
 // Add outputs from the deployment here, if needed.
 //

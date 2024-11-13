@@ -22,9 +22,19 @@ public class DebateGrain(
 
     public ValueTask<Abstractions.Models.Debate> GetDebate() => ValueTask.FromResult(Debate.State);
 
-    public Task SetDebate(Abstractions.Models.Debate debate) => Task.FromResult(Debate.State = debate);
+    public async Task SelectTopicAsync()
+    {
+        var topicGrain = GrainFactory.GetGrain<ITopicGrain>(Guid.Empty);
 
-    public async Task SelectAgents()
+        Debate.State.Topic = await topicGrain.GetNextTopicAsync();
+        Debate.State.ChatHistory.Add(new ChatMessage { Author = "User", Content = Debate.State.Topic, Role = ChatMessageAuthorRole.User });
+        await Debate.WriteStateAsync();
+
+        var leaderBoard = GrainFactory.GetGrain<ILeaderboardGrain>(Guid.Empty);
+        await leaderBoard.DebateTopicSelected(Debate.State.Topic);
+    }
+
+    public async Task SelectAgentsAsync()
     {
         logger.LogInformation("SkD: Getting the matchmaker for debate {DebateId}", Debate.State.Id);
         var matchmaker = GrainFactory.GetGrain<IMatchmakingGrain>(Guid.Empty);
@@ -44,21 +54,30 @@ public class DebateGrain(
             Debate.State.Moderator = new AgentDescriptor { Name = moderator.Name, FullName = moderator.FullName };
             Debate.State.Debater1 = new AgentDescriptor { Name = debater1.Name, FullName = debater1.FullName };
             Debate.State.Debater2 = new AgentDescriptor { Name = debater2.Name, FullName = debater2.FullName };
+            Debate.State.NextAgent = Debate.State.Moderator;
 
             debateAgents.Add(Debate.State.Moderator.Name, GrainFactory.GetGrain<IAgentSessionGrain>(Debate.State.Moderator.Name));
             debateAgents.Add(Debate.State.Debater1.Name, GrainFactory.GetGrain<IAgentSessionGrain>(Debate.State.Debater1.Name));
             debateAgents.Add(Debate.State.Debater2.Name, GrainFactory.GetGrain<IAgentSessionGrain>(Debate.State.Debater2.Name));
 
-            Debate.State.Started = DateTime.UtcNow;
             await Debate.WriteStateAsync();
 
             // Notify the leaderboard
             var leaderBoard = GrainFactory.GetGrain<ILeaderboardGrain>(Guid.Empty);
-            await leaderBoard.DebateStarted(Debate.State);
+            await leaderBoard.DebateAgentsSelected(Debate.State.Moderator, Debate.State.Debater1, Debate.State.Debater2);
         }
     }
 
-    public async Task Go()
+    public async Task StartDebateAsync()
+    {
+        Debate.State.Started = DateTime.Now;
+        await Debate.WriteStateAsync();
+
+        var leaderBoard = GrainFactory.GetGrain<ILeaderboardGrain>(Guid.Empty);
+        await leaderBoard.DebateStarted(Debate.State.Started);
+    }
+
+    public async Task DebateAsync()
     {
         if (!await debateAgents[Debate.State.Moderator.Name].IsAgentOnline()
             || !await debateAgents[Debate.State.Debater1.Name].IsAgentOnline()
@@ -67,22 +86,38 @@ public class DebateGrain(
             return;
         }
 
-        if (string.IsNullOrEmpty(Debate.State.Topic))
+        if (Debate.State.NextAgent.Name.Equals("end", StringComparison.OrdinalIgnoreCase))
         {
-            var topic = await GrainFactory.GetGrain<ITopicGrain>(Guid.Empty).GetNextTopicAsync();
-            Debate.State.Topic = topic;
-            Debate.State.ChatHistory.Add(new ChatMessage { Author = "User", Content = topic, Role = ChatMessageAuthorRole.User });
-            Debate.State.NextAgent = Debate.State.Moderator;
-            await Debate.WriteStateAsync();
+            return;
         }
 
         await debateAgents[Debate.State.NextAgent.Name].InvokeAsync(Debate.State.Id);
     }
-
-    public async Task SelectWinner(string agentName)
+    public async Task AddChatMessageAsync(ChatMessage message, AgentDescriptor nextAgent)
     {
+        Debate.State.ChatHistory.Add(message);
+        Debate.State.NextAgent = nextAgent;
+        await Debate.WriteStateAsync();
+
+        var leaderBoard = GrainFactory.GetGrain<ILeaderboardGrain>(Guid.Empty);
+        await leaderBoard.DebateChatMessageAdded(message);
+    }
+
+    public async Task EndDebateAsync(ChatMessage message)
+    {
+        Debate.State.Ended = DateTime.Now;
+        await AddChatMessageAsync(message, new AgentDescriptor { Name = "end" });
+
+        var leaderBoard = GrainFactory.GetGrain<ILeaderboardGrain>(Guid.Empty);
+        await leaderBoard.DebateEnded(Debate.State.Ended);
+    }
+
+    public async Task SelectWinnerAsync(string agentName)
+    {   
+        var moderatorGrain = GrainFactory.GetGrain<IAgentSessionGrain>(Debate.State.Moderator.Name);
         var debater1Grain = GrainFactory.GetGrain<IAgentSessionGrain>(Debate.State.Debater1.Name);
         var debater2Grain = GrainFactory.GetGrain<IAgentSessionGrain>(Debate.State.Debater2.Name);
+        var moderator = await moderatorGrain.Get();
         var debater1 = await debater1Grain.Get();
         var debater2 = await debater2Grain.Get();
 
@@ -105,35 +140,24 @@ public class DebateGrain(
             logger.LogInformation("SkD: {Debater1Name} ties with {Debater2Name}.", debater1.Name, debater2.Name);
         }
 
-        await SetDebate(Debate.State);
-
         var lobbyGrain = GrainFactory.GetGrain<ILobbyGrain>(Guid.Empty);
 
+        if (await moderatorGrain.IsAgentOnline())
+        {
+            await lobbyGrain.EnterLobby(moderator);
+        }
+
         if (await debater1Grain.IsAgentOnline())
+        {
             await lobbyGrain.EnterLobby(debater1);
+        }
 
         if (await debater2Grain.IsAgentOnline())
+        {
             await lobbyGrain.EnterLobby(debater2);
+        }
 
-        var leaderBoard = GrainFactory.GetGrain<ILeaderboardGrain>(Guid.Empty);
-        await leaderBoard.DebateCompleted(Debate.State);
-    }
-
-    public async Task AddChatMessageAsync(ChatMessage message, AgentDescriptor nextAgent)
-    {
-        Debate.State.ChatHistory.Add(message);
-        Debate.State.NextAgent = nextAgent;
+        Debate.State.Winner = agentName;
         await Debate.WriteStateAsync();
-
-        var leaderBoard = GrainFactory.GetGrain<ILeaderboardGrain>(Guid.Empty);
-        await leaderBoard.DebateChatMessageAdded(message);
-    }
-
-    public async Task EndDebate(ChatMessage message)
-    {
-        await AddChatMessageAsync(message, new AgentDescriptor { Name = "end" });
-
-        var leaderBoard = GrainFactory.GetGrain<ILeaderboardGrain>(Guid.Empty);
-        await leaderBoard.DebateCompleted(Debate.State);
     }
 }

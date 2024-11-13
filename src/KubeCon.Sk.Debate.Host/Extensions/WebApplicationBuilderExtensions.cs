@@ -11,20 +11,19 @@ public static class WebApplicationBuilderExtensions
     {
         builder.Services.AddSingleton<DebateEngineStateController>();
         builder.Services.AddHostedService<DebateEngine>();
+        builder.Services.AddTransient<ILifecycleParticipant<ISiloLifecycle>, SiloLifecycleObserver>();
 
         builder.Services.AddEndpointsApiExplorer();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
-        builder.AddAzureOpenAIClient("aoai");
-
-        //builder.AddAzureOpenAIClient("aoai", configureClientBuilder: builder =>
-        //{
-        //    builder.ConfigureOptions(options =>
-        //    {
-        //        options.AddPolicy(new SingleAuthorizationHeaderPolicy(), PipelinePosition.PerTry);
-        //    });
-        //});
+        builder.AddAzureOpenAIClient("aoai", configureClientBuilder: clientBuilder =>
+        {
+            clientBuilder.ConfigureOptions(options =>
+            {
+                options.AddPolicy(new SingleAuthorizationHeaderPolicy(), PipelinePosition.PerTry);
+            });
+        });
 
         var aoaiDeploymentName = builder.Configuration.GetValue<string>("AOAI_DEPLOYMENT_NAME");
         builder.Services.AddKernel()

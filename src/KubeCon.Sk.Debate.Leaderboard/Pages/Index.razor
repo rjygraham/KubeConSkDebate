@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Humanizer
 @using KubeCon.Sk.Debate.Leaderboard.Hubs
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.SignalR.Client
@@ -6,153 +7,84 @@
 @using KubeCon.Sk.Debate.Abstractions.Models
 @using MudBlazor
 @inject NavigationManager _navigationManager
+@inject IHttpClientFactory _clientFactory
 
 <PageTitle>Semantic Kernel Debate</PageTitle>
 
-@* @if (_debate != null)
-{ *@
-<MudGrid>
-    <MudItem xs="8">
-        <MudGrid>
-            @* @if (_debate != null)
-                {
-                    <MudItem xs="12">
-                        <MudPaper Class="mud-theme-primary d-flex align-center justify-center mud-width-full py-2">
-                            <MudText Typo="Typo.h4" Class="lucky">Round @(_debate.Turns.Count) of @_debate.Rounds</MudText>
-                        </MudPaper>
-                    </MudItem>
-                } *@
-
-            <MudItem xs="6">
-                <MudPaper Class="@($"{_agent1Theme} d-flex align-center justify-center mud-width-full py-1")">
-                    <MudStack Class="align-center">
-                        <MudText Typo="Typo.h4" Class="lucky">@_debate?.Debater1?.Name</MudText>
-                        <MudStack Row="true">
-                            @* <MudChip T="string" Class="banger" Icon="@Icons.Material.Filled.ThumbUp" Text="@($"{_debater1?.WinCount} Wins")" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Success"></MudChip>
-                            <MudChip T="string" Class="banger" Icon="@Icons.Material.Filled.ThumbDown" Text="@($"{_debater1?.LossCount} Losses")" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Error"></MudChip>
-                         *@
-                        </MudStack>
-                    </MudStack>
-                </MudPaper>
-            </MudItem>
-
-            <MudItem xs="6">
-                <MudPaper Class="@($"{_agent2Theme} d-flex align-center justify-center mud-width-full py-1")">
-                    <MudStack Class="align-center">
-                        <MudText Typo="Typo.h4" Class="lucky">@_debate?.Debater2?.Name</MudText>
-                        <MudStack Row="true">
-                           @*  <MudChip T="string" Class="banger" Icon="@Icons.Material.Filled.ThumbUp" Text="@($"{_debater2?.WinCount} Wins")" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Success"></MudChip>
-                            <MudChip T="string" Class="banger" Icon="@Icons.Material.Filled.ThumbDown" Text="@($"{_debater2?.LossCount} Losses")" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Error"></MudChip>
-                         *@
-                        </MudStack>
-                    </MudStack>
-                </MudPaper>
-            </MudItem>
-
-            @* <MudItem xs="6">
-                    <MudPaper Class="d-flex align-center justify-center mud-width-full py-2" Outlined="true">
-                        @if (_turn == null || !_turn.Throws.Any())
-                        {
-                            <MudProgressCircular Color="Color.Primary" Style="height:280px;width:280px;" Indeterminate="true" Class="object-center" />
-                        }
-                        @if (!(_turn == null || !_turn.Throws.Any()))
-                        {
-                            @if (_turn.Winner != _debater1?.Name && _turn.Winner != _debater2?.Name)
-                            {
-                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[0].Play.ToString().ToLower()}.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
-                            }
-                            @if (_turn.Winner == _debater1?.Name)
-                            {
-                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[0].Play.ToString().ToLower()}-win.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
-                            }
-                            @if (_turn.Winner == _debater2?.Name)
-                            {
-                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[0].Play.ToString().ToLower()}-lose.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
-                            }
-                        }
+@if (_debate != null)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudPaper Class="mud-theme-secondary d-flex align-center justify-center mud-width-full py-1">
+                        <MudText Typo="Typo.h4" Class="lucky align-center">@_debate?.Topic</MudText>
                     </MudPaper>
-                </MudItem> *@
+                </MudItem>
 
-            @*  <MudItem xs="6">
-                    <MudPaper Class="d-flex align-center justify-center mud-width-full py-2" Outlined="true">
-                        @if (_turn == null || !_turn.Throws.Any())
-                        {
-                            <MudProgressCircular Color="Color.Primary" Style="height:280px;width:280px;" Indeterminate="true" Class="object-center" />
-                        }
-                        @if (!(_turn == null || !_turn.Throws.Any()))
-                        {
-                            @if (_turn.Winner != _debater1?.Name && _turn.Winner != _debater2?.Name)
-                            {
-                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[1].Play.ToString().ToLower()}.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
-                            }
-                            @if (_turn.Winner == _debater2?.Name)
-                            {
-                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[1].Play.ToString().ToLower()}-win.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
-                            }
-                            @if (_turn.Winner == _debater1?.Name)
-                            {
-                                <MudImage Style="height:280px;width:280px;" Src="@($"{_turn.Throws[1].Play.ToString().ToLower()}-lose.png")" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Class="object-center" />
-                            }
-                        }
+                <MudItem xs="4">
+                    <MudPaper Class="@($"{_agent1Theme} d-flex align-center justify-center mud-width-full py-1")">
+                        <MudText Typo="Typo.h6" Class="lucky align-center">@_debate?.Debater1?.Name.Humanize(LetterCasing.Title)</MudText>
                     </MudPaper>
-                </MudItem> *@
+                </MudItem>
 
-            @* @for (int i = 0; i < _debate?.Rounds; i++)
+                <MudItem xs="4">
+                    <MudPaper Class="@($"{_moderatorTheme} d-flex align-center justify-center mud-width-full py-1")">
+                        <MudText Typo="Typo.h6" Class="lucky align-center">@_debate?.Moderator?.Name.Humanize(LetterCasing.Title)</MudText>
+                    </MudPaper>
+                </MudItem>
+
+
+                <MudItem xs="4">
+                    <MudPaper Class="@($"{_agent2Theme} d-flex align-center justify-center mud-width-full py-1")">
+                        <MudStack Class="align-center">
+                            <MudText Typo="Typo.h6" Class="lucky">@_debate?.Debater2?.Name.Humanize(LetterCasing.Title)</MudText>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+
+        <MudItem xs="12">
+            <MudTimeline TimelinePosition="TimelinePosition.Alternate" Modifiers="true" hidden="@(_debate?.ChatHistory.Count == 0)">
+                @foreach (var message in _debate?.ChatHistory)
                 {
-                    var index = i + 1;
-                    var player1Theme = "mud-theme-info";
-                    var player2Theme = "mud-theme-info";
-                    var player1Label = $"Round {index}";
-                    var player2Label = $"Round {index}";
+                    <MudTimelineItem Size="Size.Medium" Elevation="1" Color="@GetThemeColor(message.Author)">
+                        <ItemContent>
+                            <MudPaper Class="@($"{GetThemeClass(message.Author)} d-flex align-center justify-center mud-width-full py-1 mb-1")">
+                                <MudText Typo="Typo.h5" Class="lucky align-center">@message.Author.Humanize(LetterCasing.Title)</MudText>
+                            </MudPaper>
+                            <MudText>@(new MarkupString(message.Content))</MudText>
+                        </ItemContent>
+                    </MudTimelineItem>
+                }
+            </MudTimeline>
+        </MudItem>
 
-                    if (_debate.Turns.Count >= index)
-                    {
-                        if (string.IsNullOrEmpty(_debate.Turns[i].Winner))
-                        {
-                            player2Theme = "mud-theme-info";
-                            player1Theme = "mud-theme-info";
-                            player2Label = "Scoring...";
-                            player1Label = "Scoring...";
-                        }
-                        if (_debate.Turns[i].Winner == _debater1?.Name)
-                        {
-                            player1Theme = "mud-theme-success";
-                            player2Theme = "mud-theme-error";
-                            player1Label = "Winner";
-                            player2Label = "Loser";
-                        }
-                        if (_debate.Turns[i].Winner == _debater2?.Name)
-                        {
-                            player2Theme = "mud-theme-success";
-                            player1Theme = "mud-theme-error";
-                            player2Label = "Winner";
-                            player1Label = "Loser";
-                        }
-                        if (_debate.Turns[i].Winner != _debater1?.Name &&
-                        _debate.Turns[i].Winner != _debater2?.Name &&
-                        !string.IsNullOrEmpty(_debate.Turns[i].Winner))
-                        {
-                            player2Theme = "mud-theme-dark";
-                            player1Theme = "mud-theme-dark";
-                            player2Label = _debate.Turns[i].Winner;
-                            player1Label = _debate.Turns[i].Winner;
-                        }
-                    } 
-
-                    <MudItem xs="6">
-                        <MudPaper Class="@($"{player1Theme} d-flex align-center justify-center mud-width-full py-1")">
-                            <MudText Typo="Typo.h4" Class="banger">@player1Label</MudText>
-                        </MudPaper>
-                    </MudItem>
-
-                    <MudItem xs="6">
-                        <MudPaper Class="@($"{player2Theme} d-flex align-center justify-center mud-width-full py-1")">
-                            <MudText Typo="Typo.h4" Class="banger">@player2Label</MudText>
-                        </MudPaper>
-                    </MudItem>
-                } *@
+        <MudItem xs="12" hidden="@(!_isWinnerSelectionOpen)">
+            <MudPaper Class="mud-theme-secondary d-flex align-center justify-center mud-width-full py-1">
+                <MudText Typo="Typo.h5" Class="lucky align-center">Who made the most compelling argument?</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" hidden="@(!_isWinnerSelectionOpen)">
+            <MudButton OnClick="() => OnSelectWinner(_debate?.Debater1?.Name)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="lucky align-center">@_debate?.Debater1?.Name.Humanize()</MudButton>
+        </MudItem>
+        <MudItem xs="6" hidden="@(!_isWinnerSelectionOpen)">
+            <MudButton OnClick="() => OnSelectWinner(_debate?.Debater2?.Name)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="lucky align-center">@_debate?.Debater2?.Name.Humanize()</MudButton>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudButton OnClick="OnStartDebate" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Class="lucky">Start Debate</MudButton>
+        </MudItem>
 
 
+        @if (_latestUpdate != null)
+        {
             <MudItem xs="6">
                 <MudPaper Class="mud-theme-primary d-flex align-center justify-center mud-width-full py-1">
                     <MudStack Class="align-center">
@@ -184,90 +116,63 @@
                 </MudPaper>
             </MudItem>
 
-            <MudItem xs="6">
-                @if (_latestUpdate != null)
+            <MudItem xs="6">   
+                <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
+                    <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
+                        <MudText Typo="Typo.h5" Class="d-block pathway">Started</MudText>
+                    </MudPaper>
+                    <MudChip T="DateTime" Text="@($"{@_latestUpdate.DateStarted}")" Class="lucky" Style="font-size: 1.5em;" Variant="Variant.Filled" Color="Color.Info"></MudChip>
+                </MudPaper>
+
+                <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
+                    <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
+                        <MudText Typo="Typo.h5" Class="d-block pathway">Uptime</MudText>
+                    </MudPaper>
+                    <MudChip T="string" Text="@_latestUpdate.TimeUp.ToString("hh\\:mm\\:ss")" Class="lucky" Style="font-size: 1.5em;" Variant="Variant.Filled" Color="Color.Info"></MudChip>
+                </MudPaper>
+
+                <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
+                    <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
+                        <MudText Typo="Typo.h5" Class="d-block pathway">Debates completed</MudText>
+                    </MudPaper>
+                    <MudChip T="string" Text="@_latestUpdate.DebatesCompleted.ToString("N0")" Class="lucky" Style="font-size: 1.5em;" Variant="Variant.Filled" Color="Color.Info"></MudChip>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudPaper Class="mud-theme-primary d-flex align-center justify-center mud-width-full py-2 mb-2">
+                    <MudText Typo="Typo.h4" Class="banger">Leaderboard</MudText>
+                </MudPaper>
+
+                @foreach (var agent in _agentsOnline)
                 {
                     <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
+                        <MudChip T="string" Text="@($"{agent.PercentWon}%")" Class="lucky" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Info" SelectedColor="Color.Primary"></MudChip>
                         <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
-                            <MudText Typo="Typo.h5" Class="d-block pathway">Started</MudText>
+                            <MudText Typo="Typo.h5" Class="lucky">@agent.Name.Humanize()</MudText>
                         </MudPaper>
-                        <MudChip T="DateTime" Text="@($"{@_latestUpdate.DateStarted}")" Class="lucky" Style="font-size: 1.5em;" Variant="Variant.Filled" Color="Color.Info"></MudChip>
-                    </MudPaper>
-
-                    <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
-                        <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
-                            <MudText Typo="Typo.h5" Class="d-block pathway">Uptime</MudText>
-                        </MudPaper>
-                        <MudChip T="string" Text="@_latestUpdate.TimeUp.ToString("hh\\:mm\\:ss")" Class="lucky" Style="font-size: 1.5em;" Variant="Variant.Filled" Color="Color.Info"></MudChip>
-                    </MudPaper>
-
-                    <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
-                        <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
-                            <MudText Typo="Typo.h5" Class="d-block pathway">Games completed</MudText>
-                        </MudPaper>
-                        <MudChip T="string" Text="@_latestUpdate.DebatesCompleted.ToString("N0")" Class="lucky" Style="font-size: 1.5em;" Variant="Variant.Filled" Color="Color.Info"></MudChip>
                     </MudPaper>
                 }
             </MudItem>
-        </MudGrid>
-    </MudItem>
-
-    <MudItem xs="4">
-        <MudPaper Class="mud-theme-primary d-flex align-center justify-center mud-width-full py-2 mb-2">
-            <MudText Typo="Typo.h4" Class="banger">Leaderboard</MudText>
-        </MudPaper>
-
-        @foreach (var player in _agentsOnline)
-        {
-            <MudPaper Class="d-flex flex-grow-1 pa-1 mb-2" Elevation="0">
-                <MudChip T="string" Text="@($"{player.PercentWon}%")" Class="lucky" Style="font-size: 2em;" Variant="Variant.Filled" Color="Color.Info" SelectedColor="Color.Primary"></MudChip>
-                <MudPaper Class="flex-grow-1 pl-2" Elevation="0">
-                    <MudText Typo="Typo.h5" Class="lucky">@player.Name</MudText>
-                </MudPaper>
-            </MudPaper>
         }
-    </MudItem>
-
-    @if (_debate != null)
-    {
-        <MudTimeline TimelinePosition="TimelinePosition.Alternate" Modifiers="true" hidden="@(_debate.ChatHistory.Count == 0)">
-            @foreach (var message in _debate.ChatHistory)
-            {
-                @* Color="@GetColor(message.Author)" *@ 
-                <MudTimelineItem Size="Size.Medium" Elevation="0">
-                    <ItemContent>
-                        @* <MudAvatar>
-                            @if (message.Avatar.Equals("none"))
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.Settings" />
-                            }
-                            else
-                            {
-                                <MudImage Src="@message.Avatar"></MudImage>
-                            }
-                        </MudAvatar> *@
-                        @* Color="@GetColor(message.Author)" *@
-                        <MudText  Typo="Typo.h6" GutterBottom="true">@message.Author</MudText>
-                        <MudText>@(new MarkupString(message.Content))</MudText>
-                    </ItemContent>
-                </MudTimelineItem>
-            }
-        </MudTimeline>
-    }
-</MudGrid>
-@* } *@
+    </MudGrid>
+}
 
 @code
 {
     Debate? _debate;
     List<Agent> _agentsOnline = new();
-    string _agent1Theme = "mud-theme-info";
-    string _agent2Theme = "mud-theme-info";
+    bool _isWinnerSelectionOpen = false;
+
+    string _agent1Theme = "mud-theme-tertiary";
+    string _moderatorTheme = "mud-theme-info";
+    string _agent2Theme = "mud-theme-warning";
     string _signalrUrl = string.Empty;
 
     public List<ChartSeries> Series = new List<ChartSeries>();
     private List<double> _data = new();
     SystemStatusUpdate? _latestUpdate;
+    HttpClient _apiClient = null;
 
     private ChartOptions _options = new()
         {
@@ -280,6 +185,7 @@
     {
         if (firstRender)
         {
+            _apiClient = _clientFactory.CreateClient("debate-host");
             _signalrUrl = _navigationManager.ToAbsoluteUri("/hubs/leaderboard").AbsoluteUri;
 
             var hubConnection = new HubConnectionBuilder()
@@ -294,46 +200,39 @@
                 new ChartSeries() { Name = "Grain Count", Data = _data.ToArray() }
             };
 
-            hubConnection.On<Debate>("OnDebateStarted", (debate) =>
+            hubConnection.On<string>("OnDebateTopicSelected", (debateTopic) =>
             {
-                _agent1Theme = "mud-theme-info";
-                _agent2Theme = "mud-theme-info";
-                _debate = debate;
+                _debate = new Debate();
+                _debate.Topic = debateTopic;
                 InvokeAsync(StateHasChanged);
             });
 
-            hubConnection.On<Debate>("OnDebateCompleted", (debate) =>
+            hubConnection.On<AgentDescriptor, AgentDescriptor, AgentDescriptor>("OnDebateAgentsSelected", (moderator, debater1, debater2) =>
             {
-                _debate = debate;
+                _debate.Moderator = moderator;
+                _debate.Debater1 = debater1;
+                _debate.Debater2 = debater2;
+                InvokeAsync(StateHasChanged);
+            });
 
-                // if (debate is not null)
-                // {
-                //     if (debate.Winner == _debater1?.Name)
-                //     {
-                //         _agent1Theme = "mud-theme-success";
-                //         _agent2Theme = "mud-theme-error";
-                //     }
-
-                //     if (debate.Winner == _debater2?.Name)
-                //     {
-                //         _agent2Theme = "mud-theme-success";
-                //         _agent1Theme = "mud-theme-error";
-                //     }
-
-                //     if (debate.Winner != _debater1?.Name && debate.Winner != _debater2?.Name)
-                //     {
-                //         _agent2Theme = "mud-theme-dark";
-                //         _agent1Theme = "mud-theme-dark";
-                //     }
-                // }
+            hubConnection.On<DateTime>("OnDebateStarted", (endTime) =>
+            {
 
                 InvokeAsync(StateHasChanged);
             });
 
-            hubConnection.On<ChatMessage>("OnDebateChatMessageAdded", message => {
+            hubConnection.On<ChatMessage>("OnDebateChatMessageAdded", message =>
+            {
                 _debate?.ChatHistory.Add(message);
                 InvokeAsync(StateHasChanged);
             });
+
+            hubConnection.On<DateTime>("OnDebateEnded", (endTime) =>
+            {
+                _isWinnerSelectionOpen = true;
+                InvokeAsync(StateHasChanged);
+            });
+
 
             hubConnection.On<List<Agent>>("OnAgentsOnlineUpdated", (agentsOnline) =>
             {
@@ -360,4 +259,52 @@
 
         await base.OnAfterRenderAsync(firstRender);
     }
+
+    private Color GetThemeColor(string agentName)
+    {
+        switch (agentName)
+        {
+            case var name when name.Equals(_debate?.Debater1?.Name):
+                return Color.Tertiary;
+            case var name when name.Equals(_debate?.Moderator?.Name):
+                return Color.Info;
+            case var name when name.Equals(_debate?.Debater2?.Name):
+                return Color.Warning;
+            default:
+                return Color.Primary;
+        }
+    }
+
+    private string GetThemeClass(string agentName)
+    {
+        switch (agentName)
+        {
+            case var name when name.Equals(_debate?.Debater1?.Name):
+                return _agent1Theme;
+            case var name when name.Equals(_debate?.Moderator?.Name):
+                return _moderatorTheme;
+            case var name when name.Equals(_debate?.Debater2?.Name):
+                return _agent2Theme;
+            default:
+                return "mud-theme-primary";
+        }
+    }
+
+    private async Task OnStartDebate()
+    {
+        var response = await _apiClient.PostAsync("start", null);
+    }
+
+    private async Task OnSelectWinner(string agentName)
+    {
+        var response = await _apiClient.PostAsync($"selectWinner?agentName={agentName}", null);
+
+        if (response.IsSuccessStatusCode)
+        {
+            _debate = null;
+            _isWinnerSelectionOpen = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+   
 }

@@ -6,9 +6,25 @@ namespace KubeCon.Sk.Debate.Leaderboard.Hubs;
 
 public class LeaderboardHub : Hub<ILeaderboardGrainObserver>
 {
-    public async Task OnDebateStarted(Abstractions.Models.Debate debate)
+
+    public async Task OnDebateTopicSet(string topic)
     {
-        await Clients.All.OnDebateStarted(debate);
+        await Clients.All.OnDebateTopicSelected(topic);
+    }
+
+    public async Task OnDebateAgentsSelected(AgentDescriptor moderator, AgentDescriptor debater1, AgentDescriptor debater2)
+    {
+        await Clients.All.OnDebateAgentsSelected(moderator, debater1, debater2);
+    }
+
+    public async Task OnDebateStarted(DateTime startTime)
+    {
+        await Clients.All.OnDebateStarted(startTime);
+    }
+
+    public async Task OnDebateCompleted(DateTime endTime)
+    {
+        await Clients.All.OnDebateEnded(endTime);
     }
 
     public async Task OnAgentScoresUpdated(Agent agent)
@@ -24,11 +40,6 @@ public class LeaderboardHub : Hub<ILeaderboardGrainObserver>
     public async Task OnAgentsOnlineUpdated(List<Agent> agentsOnline)
     {
         await Clients.All.OnAgentsOnlineUpdated(agentsOnline);
-    }
-
-    public async Task OnDebateCompleted(Abstractions.Models.Debate debate)
-    {
-        await Clients.All.OnDebateCompleted(debate);
     }
 
     public async Task OnLobbyUpdated(List<Agent> agentsInLobby)

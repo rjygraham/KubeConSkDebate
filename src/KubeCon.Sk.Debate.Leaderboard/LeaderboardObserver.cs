@@ -8,6 +8,10 @@ namespace KubeCon.Sk.Debate.Leaderboard;
 
 public class LeaderboardObserver(IHubContext<LeaderboardHub, ILeaderboardGrainObserver> hub) : ILeaderboardGrainObserver
 {
+    public async Task OnDebateTopicSelected(string topic)
+    {
+        await hub.Clients.All.OnDebateTopicSelected(topic);
+    }
     public async Task OnAgentScoresUpdated(Agent agent)
     {
         await hub.Clients.All.OnAgentScoresUpdated(agent);
@@ -18,6 +22,16 @@ public class LeaderboardObserver(IHubContext<LeaderboardHub, ILeaderboardGrainOb
         await hub.Clients.All.OnAgentsOnlineUpdated(agentsOnline);
     }
 
+    public async Task OnDebateAgentsSelected(AgentDescriptor moderator, AgentDescriptor debater1, AgentDescriptor debater2)
+    {
+        await hub.Clients.All.OnDebateAgentsSelected(moderator, debater1, debater2);
+    }
+
+    public async Task OnDebateStarted(DateTime startTime)
+    {
+        await hub.Clients.All.OnDebateStarted(startTime);
+    }
+
     public async Task OnDebateChatMessageAdded(ChatMessage message)
     {
         var html = Markdown.ToHtml(message.Content);
@@ -25,14 +39,9 @@ public class LeaderboardObserver(IHubContext<LeaderboardHub, ILeaderboardGrainOb
         await hub.Clients.All.OnDebateChatMessageAdded(message);
     }
 
-    public async Task OnDebateCompleted(Abstractions.Models.Debate debate)
+    public async Task OnDebateEnded(DateTime endTime)
     {
-        await hub.Clients.All.OnDebateCompleted(debate);
-    }
-
-    public async Task OnDebateStarted(Abstractions.Models.Debate debate)
-    {
-        await hub.Clients.All.OnDebateStarted(debate);
+        await hub.Clients.All.OnDebateEnded(endTime);
     }
 
     public async Task OnLobbyUpdated(List<Agent> agentsInLobby)

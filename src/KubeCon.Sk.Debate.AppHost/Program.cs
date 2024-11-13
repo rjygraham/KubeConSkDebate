@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Hosting;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Azure OpenAI
@@ -7,7 +9,9 @@ var aoai = builder.AddAzureOpenAI("aoai")
 
 // Add the resources which you will use for Orleans clustering and
 // grain state storage.
-var storage = builder.AddAzureStorage("storage");
+var storage = builder.Environment.IsDevelopment()
+   ? builder.AddAzureStorage("storage").RunAsEmulator()
+   : builder.AddAzureStorage("storage");
 var clusteringTable = storage.AddTables("clustering");
 var grainStorage = storage.AddBlobs("grain-state");
 
@@ -30,10 +34,12 @@ var debateHost = builder.AddProject<Projects.KubeCon_Sk_Debate_Host>("debate-hos
 builder.AddProject<Projects.KubeCon_Sk_Debate_DefaultAgents>("default-agents")
     .WithReference(orleans)
     .WithReference(aoai)
-    .WithEnvironment("AOAI_DEPLOYMENT_NAME", deployment.Name);
+    .WithEnvironment("AOAI_DEPLOYMENT_NAME", deployment.Name)
+    .WaitFor(debateHost);
 
 builder.AddProject<Projects.KubeCon_Sk_Debate_Leaderboard>("leaderboard")
     .WithReference(orleans)
+    .WithReference(debateHost)
     .WithExternalHttpEndpoints();
 
 builder.Build().Run();
