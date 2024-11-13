@@ -41,17 +41,18 @@ jobs:
             --tenant-id "$Env:AZURE_TENANT_ID"
         shell: pwsh
 
+      - name: Add script execute permissions
+        run: chmod -R +x ./azd-hooks
+
       - name: Create azd env
         run: azd env new "$Env:AZURE_ENV_NAME"
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
-        shell: pwsh
 
       - name: Provision Infrastructure
         run: azd provision --no-prompt
         env:
           AZD_INITIAL_ENVIRONMENT_CONFIG: ${{ secrets.AZD_INITIAL_ENVIRONMENT_CONFIG }}
-        shell: pwsh
 
       - name: Deploy Application
         run: azd deploy --no-prompt
