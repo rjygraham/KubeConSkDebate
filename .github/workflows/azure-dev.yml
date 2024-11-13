@@ -45,11 +45,13 @@ jobs:
         run: azd env new $AZURE_ENV_NAME
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+        shell: pwsh
 
       - name: Provision Infrastructure
         run: azd provision --no-prompt
         env:
           AZD_INITIAL_ENVIRONMENT_CONFIG: ${{ secrets.AZD_INITIAL_ENVIRONMENT_CONFIG }}
+        shell: pwsh
 
       - name: Deploy Application
         run: azd deploy --no-prompt
