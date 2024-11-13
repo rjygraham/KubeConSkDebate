@@ -42,7 +42,7 @@ jobs:
         shell: pwsh
 
       - name: Add script execute permissions
-        run: chmod -R +x ./azd-hooks
+        run: chmod -R 777 ./azd-hooks
 
       - name: Create azd env
         run: azd env new $AZURE_ENV_NAME
