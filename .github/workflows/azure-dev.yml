@@ -42,7 +42,7 @@ jobs:
         shell: pwsh
 
       - name: Create azd env
-        run: azd env new $AZURE_ENV_NAME
+        run: azd env new "$Env:AZURE_ENV_NAME"
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
         shell: pwsh
