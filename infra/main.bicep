@@ -13,6 +13,9 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
+@description('PrincipalId of the principal executing AZD.')
+param principalId string
+
 // Optional parameters to override the default azd resource naming conventions.
 // Add the following to main.parameters.json to provide values:
 // "resourceGroupName": {

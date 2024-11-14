@@ -23,6 +23,9 @@ param aadProfile object = {}
 @description('Whether to enable Kubernetes Role-Based Access Control.')
 param enableRBAC bool = true
 
+@description('The ID of the principal executing the deployment.')
+param principalId string = ''
+
 @description('The name of the resource group containing agent pool nodes.')
 param nodeResourceGroup string = ''
 
@@ -57,6 +60,7 @@ param nodeOSUpgradeChannel string = 'NodeImage'
 @allowed([	'AKSLongTermSupport', 'KubernetesOfficial'])
 param supportPlan string = 'KubernetesOfficial'
 
+param workspaceId string = ''
 
 param enableContainerInsights bool = false
 param omsAgentAddon object = {}
@@ -97,6 +101,48 @@ resource aks 'Microsoft.ContainerService/managedClusters@2024-03-02-preview' = {
       omsagent: enableContainerInsights ? omsAgentAddon : null 
     }
     supportPlan: supportPlan
+  }
+}
+
+var aksDiagCategories = [
+  'cluster-autoscaler'
+  'kube-controller-manager'
+  'kube-audit-admin'
+  'guard'
+]
+
+// Azure Kubernetes Service RBAC Cluster Admin
+var aksClusterAdminRoleDefinitionId = resourceId('Microsoft.Authorization/roleDefinitions', 'b1ff04bb-8a4e-4dc4-8eb5-8693973ce19b')
+
+// TODO: Update diagnostics to be its own module
+// Blocking issue: https://github.com/Azure/bicep/issues/622
+// Unable to pass in a `resource` scope or unable to use string interpolation in resource types
+resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(workspaceId)) {
+  name: 'aks-diagnostics'
+  scope: aks
+  properties: {
+    workspaceId: workspaceId
+    logs: [for category in aksDiagCategories: {
+      category: category
+      enabled: true
+    }]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+      }
+    ]
+  }
+}
+
+// Assign the storage blob data contributor role to the managed identity
+resource aksClusterAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(principalId, aks.id, aksClusterAdminRoleDefinitionId)
+  scope: aks
+  properties: {
+    principalId: principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: aksClusterAdminRoleDefinitionId
   }
 }
 
