@@ -42,6 +42,7 @@ jobs:
             
       - name: Create azd env and modify script execute permissions
         run: |
+          echo $AZURE_ENV_NAME
           azd env new $AZURE_ENV_NAME
           chmod -R 777 ./azd-hooks
         env:
