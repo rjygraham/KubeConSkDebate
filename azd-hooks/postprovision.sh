@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo "Creating role assignment for AKS RBAC Cluster Admin"
 # Assign AKS RBAC Cluster Admin role to current executing principal
 az role assignment create --assignee "$AZURE_PRINCIPAL_ID" \
   --role "Azure Kubernetes Service RBAC Cluster Admin" \

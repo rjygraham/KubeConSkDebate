@@ -1,6 +1,7 @@
 #!/usr/bin/env pwsh
 
 # Assign AKS RBAC Cluster Admin role to current executing principal
+Write-Host "Creating role assignment for AKS RBAC Cluster Admin"
 az role assignment create --assignee "$Env:AZURE_PRINCIPAL_ID" `
   --role "Azure Kubernetes Service RBAC Cluster Admin" `
   --scope "$Env:AZURE_AKS_CLUSTER_ID"
