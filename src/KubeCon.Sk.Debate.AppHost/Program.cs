@@ -31,15 +31,21 @@ var debateHost = builder.AddProject<Projects.KubeCon_Sk_Debate_Host>("debate-hos
     .WithEnvironment("AOAI_DEPLOYMENT_NAME", deployment.Name)
     .WithExternalHttpEndpoints();
 
-builder.AddProject<Projects.KubeCon_Sk_Debate_DefaultAgents>("default-agents")
-    .WithReference(orleans)
-    .WithReference(aoai)
-    .WithEnvironment("AOAI_DEPLOYMENT_NAME", deployment.Name)
-    .WaitFor(debateHost);
-
-builder.AddProject<Projects.KubeCon_Sk_Debate_Leaderboard>("leaderboard")
+var leaderboard = builder.AddProject<Projects.KubeCon_Sk_Debate_Leaderboard>("leaderboard")
     .WithReference(orleans)
     .WithReference(debateHost)
     .WithExternalHttpEndpoints();
+
+builder.AddProject<Projects.KubeCon_Sk_Debate_DefaultAgents>("default-agents")
+.WithReference(orleans)
+.WithReference(aoai)
+.WithEnvironment("AOAI_DEPLOYMENT_NAME", deployment.Name)
+.WaitFor(leaderboard);
+
+builder.AddProject<Projects.KubeCon_Sk_Debate_WeirdoAgents>("weirdo-agents")
+    .WithReference(orleans)
+    .WithReference(aoai)
+    .WithEnvironment("AOAI_DEPLOYMENT_NAME", deployment.Name)
+    .WaitFor(leaderboard);
 
 builder.Build().Run();

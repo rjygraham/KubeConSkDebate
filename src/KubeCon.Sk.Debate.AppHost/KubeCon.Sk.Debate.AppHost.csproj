@@ -24,6 +24,7 @@
     <ProjectReference Include="..\KubeCon.Sk.Debate.DefaultAgents\KubeCon.Sk.Debate.DefaultAgents.csproj" />
     <ProjectReference Include="..\KubeCon.Sk.Debate.Host\KubeCon.Sk.Debate.Host.csproj" />
     <ProjectReference Include="..\KubeCon.Sk.Debate.Leaderboard\KubeCon.Sk.Debate.Leaderboard.csproj" />
+    <ProjectReference Include="..\KubeCon.Sk.Debate.WeirdoAgents\KubeCon.Sk.Debate.WeirdoAgents.csproj" />
   </ItemGroup>
 
 </Project>

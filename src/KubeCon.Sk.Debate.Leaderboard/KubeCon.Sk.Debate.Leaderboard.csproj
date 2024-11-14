@@ -4,14 +4,19 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<IsPublishable>true</IsPublishable>
     <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0</ContainerBaseImage>
+	<ContainerRepository>kubecon-sk-debate/leaderboard</ContainerRepository>
     <UserSecretsId>a1043d4c-5f1d-42d1-a036-7fc6eceeccef</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <ContainerPort Include="8081" />
+	<ContainerPort Include="8080" Type="tcp" />
+	<ContainerPort Include="8081" Type="tcp" />
+	<ContainerPort Include="11111" Type="tcp" />
+	<ContainerPort Include="30000" Type="tcp" />
   </ItemGroup>
 
   <ItemGroup>

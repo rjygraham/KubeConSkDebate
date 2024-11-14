@@ -8,62 +8,65 @@
 name: kubecon-sk-debate
 hooks:
   preprovision:
-    posix:
-      shell: sh
-      continueOnError: false
-      interactive: false
-      run: ./azd-hooks/preprovision.sh
-    windows:
-      shell: pwsh
-      continueOnError: false
-      interactive: false
-      run: ./azd-hooks/preprovision.ps1
-  postprovision:
-    posix:
-      shell: sh
-      continueOnError: false
-      interactive: false
-      run: ./azd-hooks/postprovision.sh
-    windows:
-      shell: pwsh
-      continueOnError: false
-      interactive: false
-      run: ./azd-hooks/postprovision.ps1
-  predeploy: # This hook is executed before the deployment of the application to create the custom-values.yaml file
-    posix:
-      shell: sh
-      continueOnError: false
-      interactive: false
-      run: ./azd-hooks/predeploy.sh
-    windows:
-      shell: pwsh
-      continueOnError: false
-      interactive: false
-      run: ./azd-hooks/predeploy.ps1
-  postdeploy:
-    posix:
-      shell: sh
-      continueOnError: false
-      interactive: false
-      run: ./azd-hooks/postdeploy.sh
-    windows:
-      shell: pwsh
-      continueOnError: false
-      interactive: false
-      run: ./azd-hooks/postdeploy.ps1
-infra:
-  provider: bicep
-  path: infra
-services:
-  debate-host:
-    language: csharp
-    project: ./src/KubeCon.Sk.Debate.Host
-    host: aks
-  leaderboard:
-    language: csharp
-    project: ./src/KubeCon.Sk.Debate.Leaderboard
-    host: aks
-  default-agents:
-    language: csharp
-    project: ./src/KubeCon.Sk.Debate.DefaultAgents
-    host: aks
+    shell: pwsh
+    run: ./azd-hooks/preprovision.ps1
+#   preprovision:
+#     posix:
+#       shell: sh
+#       continueOnError: false
+#       interactive: false
+#       run: ./azd-hooks/preprovision.sh
+#     windows:
+#       shell: pwsh
+#       continueOnError: false
+#       interactive: false
+#       run: ./azd-hooks/preprovision.ps1
+#   postprovision:
+#     posix:
+#       shell: sh
+#       continueOnError: false
+#       interactive: false
+#       run: ./azd-hooks/postprovision.sh
+#     windows:
+#       shell: pwsh
+#       continueOnError: false
+#       interactive: false
+#       run: ./azd-hooks/postprovision.ps1
+#   predeploy: # This hook is executed before the deployment of the application to create the custom-values.yaml file
+#     posix:
+#       shell: sh
+#       continueOnError: false
+#       interactive: false
+#       run: ./azd-hooks/predeploy.sh
+#     windows:
+#       shell: pwsh
+#       continueOnError: false
+#       interactive: false
+#       run: ./azd-hooks/predeploy.ps1
+#   postdeploy:
+#     posix:
+#       shell: sh
+#       continueOnError: false
+#       interactive: false
+#       run: ./azd-hooks/postdeploy.sh
+#     windows:
+#       shell: pwsh
+#       continueOnError: false
+#       interactive: false
+#       run: ./azd-hooks/postdeploy.ps1
+# infra:
+#   provider: bicep
+#   path: infra
+# services:
+#   debate-host:
+#     language: csharp
+#     project: ./src/KubeCon.Sk.Debate.Host
+#     host: aks
+#   leaderboard:
+#     language: csharp
+#     project: ./src/KubeCon.Sk.Debate.Leaderboard
+#     host: aks
+#   default-agents:
+#     language: csharp
+#     project: ./src/KubeCon.Sk.Debate.DefaultAgents
+#     host: aks

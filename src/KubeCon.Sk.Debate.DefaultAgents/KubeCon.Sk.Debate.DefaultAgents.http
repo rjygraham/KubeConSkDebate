@@ -1,6 +1,0 @@
-@KubeCon.Sk.Debate.DefaultAgents_HostAddress = http://localhost:5012
-
-GET {{KubeCon.Sk.Debate.DefaultAgents_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

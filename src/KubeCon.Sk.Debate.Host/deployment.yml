@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debate-host
+  labels:
+    orleans/serviceId: h3pb79d9d6m56c4wbwyw6q50g
+spec:
+  selector:
+    matchLabels:
+      orleans/serviceId: h3pb79d9d6m56c4wbwyw6q50g
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        # This label is used to identify the service to Orleans
+        orleans/serviceId: h3pb79d9d6m56c4wbwyw6q50g
+
+        # This label is used to identify an instance of a cluster to Orleans.
+        # Typically, this will be the same value as the previous label, or any
+        # fixed value.
+        # In cases where you are not using rolling deployments (for example,
+        # blue/green deployments),
+        # this value can allow for distinct clusters which do not communicate
+        # directly with each others,
+        # but which still share the same storage and other resources.
+        orleans/clusterId: fxh30eu6r30wvbv424frstt5e
+    spec:
+      containers:
+        - name: main
+          image: crtplbs4tik65eq.azurecr.io/kubecon-sk-debate/debate-host:latest
+          imagePullPolicy: Always
+          ports:
+          # Define the ports which Orleans uses
+          - containerPort: 8080
+          - containerPort: 8081
+          - containerPort: 11111
+          - containerPort: 30000
+          env:
+          # The Azure Storage connection string for clustering is injected as an
+          # environment variable
+          # It must be created separately using a command such as:
+          # > kubectl create secret generic az-storage-acct `
+          #     --from-file=key=./az-storage-acct.txt
+          - name: AOAI_DEPLOYMENT_NAME
+            value: "gpt-4o"
+
+          # Configure settings to let Orleans know which cluster it belongs to
+          # and which pod it is running in
+          - name: ORLEANS_SERVICE_ID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.labels['orleans/serviceId']
+          - name: ORLEANS_CLUSTER_ID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.labels['orleans/clusterId']
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: DOTNET_SHUTDOWNTIMEOUTSECONDS
+            value: "120"
+          request:
+            # Set resource requests
+      terminationGracePeriodSeconds: 180
+      imagePullSecrets:
+        - name: my-image-pull-secret
+  minReadySeconds: 60
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1

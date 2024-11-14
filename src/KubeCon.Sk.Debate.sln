@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubeCon.Sk.Debate.DefaultAg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubeCon.Sk.Debate.Leaderboard", "KubeCon.Sk.Debate.Leaderboard\KubeCon.Sk.Debate.Leaderboard.csproj", "{5B2CB4DE-D44B-4976-94C1-16CC6319F8F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubeCon.Sk.Debate.WeirdoAgents", "KubeCon.Sk.Debate.WeirdoAgents\KubeCon.Sk.Debate.WeirdoAgents.csproj", "{72E76487-674F-4BE4-A6A0-1759B9331D63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{5B2CB4DE-D44B-4976-94C1-16CC6319F8F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B2CB4DE-D44B-4976-94C1-16CC6319F8F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B2CB4DE-D44B-4976-94C1-16CC6319F8F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72E76487-674F-4BE4-A6A0-1759B9331D63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72E76487-674F-4BE4-A6A0-1759B9331D63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72E76487-674F-4BE4-A6A0-1759B9331D63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72E76487-674F-4BE4-A6A0-1759B9331D63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

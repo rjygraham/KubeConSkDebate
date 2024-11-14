@@ -16,6 +16,6 @@ app.MapDefaultEndpoints();
 app.MapDebateControllerEndpoints();
 app.MapOpenApiDuringDevelopment();
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.Run();

@@ -4,11 +4,20 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<IsPublishable>true</IsPublishable>
     <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0</ContainerBaseImage>
+	<ContainerRepository>kubecon-sk-debate/debate-host</ContainerRepository>
     <UserSecretsId>9fe144fe-2d4f-470a-978e-77fa1f0f5fcd</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+	<ContainerPort Include="8080" Type="tcp" />
+	<ContainerPort Include="8081" Type="tcp" />
+	<ContainerPort Include="11111" Type="tcp" />
+	<ContainerPort Include="30000" Type="tcp" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Azure.AI.OpenAI" Version="9.0.0-preview.5.24551.3" />
@@ -23,10 +32,6 @@
     <PackageReference Include="Scalar.AspNetCore" Version="1.2.35" />
     <PackageReference Include="System.Private.Uri" Version="4.3.2" />
     <PackageReference Include="System.Text.Json" Version="9.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ContainerPort Include="8081" />
   </ItemGroup>
 
   <ItemGroup>

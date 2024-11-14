@@ -1,15 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	<IsPublishable>true</IsPublishable>
     <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
     <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0</ContainerBaseImage>
-	<ContainerRepository>kubecon-sk-debate/default-agents</ContainerRepository>
-    <UserSecretsId>a2648753-c610-4b7f-bb39-390f36af6a7e</UserSecretsId>
+    <UserSecretsId>4e4449b6-fbf0-478c-a581-d38e5dab3fb6</UserSecretsId>
 	<NoWarn>$(NoWarn);CA2007;IDE1006;SKEXP0001;SKEXP0010;SKEXP0110;OPENAI001</NoWarn>
   </PropertyGroup>
 
@@ -24,18 +22,18 @@
 	<PackageReference Include="Aspire.Azure.Storage.Blobs" Version="9.0.0" />
 	<PackageReference Include="Microsoft.Orleans.Clustering.AzureStorage" Version="8.2.0" />
 	<PackageReference Include="Microsoft.Orleans.Persistence.AzureStorage" Version="8.2.0" />
-    <PackageReference Include="Microsoft.Orleans.Sdk" Version="8.2.0" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="8.2.0" />
-    <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.28.0-alpha" />	
-	<PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureOpenAI" Version="1.28.0" />	
-	<PackageReference Include="System.Private.Uri" Version="4.3.2" />	
+	<PackageReference Include="Microsoft.Orleans.Sdk" Version="8.2.0" />
+	<PackageReference Include="Microsoft.Orleans.Server" Version="8.2.0" />
+	<PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.28.0-alpha" />
+	<PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureOpenAI" Version="1.28.0" />
+	<PackageReference Include="System.Private.Uri" Version="4.3.2" />
 	<PackageReference Include="System.Text.Json" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KubeCon.Sk.Debate.Abstractions\KubeCon.Sk.Debate.Abstractions.csproj" />
-    <ProjectReference Include="..\KubeCon.Sk.Debate.Infrastructure\KubeCon.Sk.Debate.Infrastructure.csproj" />
-    <ProjectReference Include="..\KubeCon.Sk.Debate.ServiceDefaults\KubeCon.Sk.Debate.ServiceDefaults.csproj" />
+	<ProjectReference Include="..\KubeCon.Sk.Debate.Abstractions\KubeCon.Sk.Debate.Abstractions.csproj" />
+	<ProjectReference Include="..\KubeCon.Sk.Debate.Infrastructure\KubeCon.Sk.Debate.Infrastructure.csproj" />
+	<ProjectReference Include="..\KubeCon.Sk.Debate.ServiceDefaults\KubeCon.Sk.Debate.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
