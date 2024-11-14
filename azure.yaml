@@ -8,30 +8,27 @@
 name: kubecon-sk-debate
 hooks:
   preprovision:
-    shell: sh
-    run: ./azd-hooks/preprovision.sh
-#   preprovision:
-#     posix:
-#       shell: sh
-#       continueOnError: false
-#       interactive: false
-#       run: ./azd-hooks/preprovision.sh
-#     windows:
-#       shell: pwsh
-#       continueOnError: false
-#       interactive: false
-#       run: ./azd-hooks/preprovision.ps1
-#   postprovision:
-#     posix:
-#       shell: sh
-#       continueOnError: false
-#       interactive: false
-#       run: ./azd-hooks/postprovision.sh
-#     windows:
-#       shell: pwsh
-#       continueOnError: false
-#       interactive: false
-#       run: ./azd-hooks/postprovision.ps1
+    posix:
+      shell: sh
+      continueOnError: false
+      interactive: false
+      run: ./azd-hooks/preprovision.sh
+    windows:
+      shell: pwsh
+      continueOnError: false
+      interactive: false
+      run: ./azd-hooks/preprovision.ps1
+  postprovision:
+    posix:
+      shell: sh
+      continueOnError: false
+      interactive: false
+      run: ./azd-hooks/postprovision.sh
+    windows:
+      shell: pwsh
+      continueOnError: false
+      interactive: false
+      run: ./azd-hooks/postprovision.ps1
 #   predeploy: # This hook is executed before the deployment of the application to create the custom-values.yaml file
 #     posix:
 #       shell: sh
