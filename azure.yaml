@@ -8,8 +8,8 @@
 name: kubecon-sk-debate
 hooks:
   preprovision:
-    shell: pwsh
-    run: ./azd-hooks/preprovision.ps1
+    shell: sh
+    run: ./azd-hooks/preprovision.sh
 #   preprovision:
 #     posix:
 #       shell: sh

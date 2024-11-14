@@ -35,24 +35,20 @@ jobs:
       - name: Log in with Azure (Federated Credentials)
         if: ${{ env.AZURE_CLIENT_ID != '' }}
         run: |
-          azd auth login `
-            --client-id "$Env:AZURE_CLIENT_ID" `
-            --federated-credential-provider "github" `
-            --tenant-id "$Env:AZURE_TENANT_ID"
-        shell: pwsh
+          azd auth login \
+            --client-id $ZURE_CLIENT_ID \
+            --federated-credential-provider "github" \
+            --tenant-id $AZURE_TENANT_ID
 
-      - name: Add script execute permissions
-        run: chmod -R 777 ./azd-hooks
-
-      - name: Create azd env
-        run: azd env new $AZURE_ENV_NAME
+      - name: Create azd env and modify script execute permissions
+        run: |
+          azd env new $AZURE_ENV_NAME
+          chmod -R 777 ./azd-hooks
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
-
+          
       - name: Provision Infrastructure
         run: azd provision --debug # --no-prompt
-        env:
-          AZD_INITIAL_ENVIRONMENT_CONFIG: ${{ secrets.AZD_INITIAL_ENVIRONMENT_CONFIG }}
 
       - name: Deploy Application
         run: azd deploy --debug # --no-prompt
