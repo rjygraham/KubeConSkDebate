@@ -52,3 +52,9 @@ done
 
 # Propagate the feature registrations
 az provider register -n Microsoft.ContainerService
+
+# Check kubelogin and install if not exists
+if ! command -v kubelogin &> /dev/null; then
+  echo "kubelogin could not be found. Installing kubelogin..."
+  az aks install-cli
+fi

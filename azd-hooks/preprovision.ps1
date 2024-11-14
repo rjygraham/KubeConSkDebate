@@ -52,3 +52,8 @@ while ((az feature show --namespace "Microsoft.ContainerService" --name "Automat
 
 # propagate the feature registrations
 az provider register --namespace "Microsoft.ContainerService"
+
+# Check kubelogin and install if not exists
+if (-not (Get-Command kubelogin -ErrorAction SilentlyContinue)) {
+  az aks install-cli
+}
