@@ -17,14 +17,8 @@ param clusterSku object = {
 @description('Enable Microsoft Entra ID Profile.')
 param enableAadProfile bool = false
 
-@description('The Microsoft Entra ID configuration.')
-param aadProfile object = {}
-
 @description('Whether to enable Kubernetes Role-Based Access Control.')
 param enableRBAC bool = true
-
-@description('The ID of the principal executing the deployment.')
-param principalId string = ''
 
 @description('The name of the resource group containing agent pool nodes.')
 param nodeResourceGroup string = ''
@@ -98,7 +92,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2024-03-02-preview' = {
       }
     ]
     addonProfiles: {
-      omsagent: enableContainerInsights ? omsAgentAddon : null 
+      omsagent: enableContainerInsights ? omsAgentAddon : {}
     }
     supportPlan: supportPlan
   }
@@ -110,9 +104,6 @@ var aksDiagCategories = [
   'kube-audit-admin'
   'guard'
 ]
-
-// Azure Kubernetes Service RBAC Cluster Admin
-var aksClusterAdminRoleDefinitionId = resourceId('Microsoft.Authorization/roleDefinitions', 'b1ff04bb-8a4e-4dc4-8eb5-8693973ce19b')
 
 // TODO: Update diagnostics to be its own module
 // Blocking issue: https://github.com/Azure/bicep/issues/622
@@ -135,19 +126,11 @@ resource diagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' 
   }
 }
 
-// Assign the storage blob data contributor role to the managed identity
-resource aksClusterAdminRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(principalId, aks.id, aksClusterAdminRoleDefinitionId)
-  scope: aks
-  properties: {
-    principalId: principalId
-    principalType: 'ServicePrincipal'
-    roleDefinitionId: aksClusterAdminRoleDefinitionId
-  }
-}
-
 @description('The resource name of the AKS cluster')
 output clusterName string = aks.name
+
+@description('The resource ID of the AKS cluster')
+output clusterId string = aks.id
 
 @description('The AKS cluster identity')
 output clusterIdentity object = {

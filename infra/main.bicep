@@ -119,32 +119,6 @@ module containerRegistry 'core/host/container-registry.bicep' = {
   }
 }
 
-// module aks 'core/host/aks-managed-cluster.bicep' = {
-//   scope: rg
-//   name: 'aks'
-//   params: {
-//     name: '${abbrs.kubernetesManagedClusters}${resourceToken}'
-//     skuName: 'Automatic'
-//     skuTier: 'Standard'
-//     kubernetesVersion: '1.31.1'
-//     enableRbac: true
-//     enableAad: true
-//     enableAzureRbac: true
-//     networkDataplane: 'cilium'
-//     networkPlugin: 'azure'
-//     networkPolicy: 'calico'
-//     workspaceId: monitoring.outputs.logAnalyticsWorkspaceId
-//     webAppRoutingAddon: true
-//     systemPoolConfig: {
-//       name: 'systempool'
-//       count: 3
-//       mode: 'System'
-//       vmSize: 'Standard_D4ds_v5'
-//       availabilityZones: ['1', '3']
-//     }
-//   }
-// }
-
 module aks 'core/host/aks-automatic-cluster.bicep' = {
   scope: rg
   name: 'aks'
@@ -167,6 +141,7 @@ module aks 'core/host/aks-automatic-cluster.bicep' = {
     nodeOSUpgradeChannel: 'NodeImage'
     supportPlan: 'KubernetesOfficial'
     enableContainerInsights: true
+    workspaceId: monitoring.outputs.logAnalyticsWorkspaceId
     omsAgentAddon: {
       enabled: true
       config: {
@@ -174,7 +149,6 @@ module aks 'core/host/aks-automatic-cluster.bicep' = {
           useAADAuth: 'true'
       }
     }
-    workspaceId: monitoring.outputs.logAnalyticsWorkspaceId
   }
 }
 
@@ -186,15 +160,6 @@ module aksAcrAccess 'core/security/registry-access.bicep' = {
     principalId: aks.outputs.clusterIdentity.objectId
   }
 }
-
-// module cloudNativeMonitoring 'core/monitor/cloud-native.bicep' = {
-//   scope: rg
-//   name: 'cloudNativeMonitoring'
-//   params: {
-//     grafanaDashbboardName: '${abbrs.grafanaDashboards}${resourceToken}'
-//     monitorWorkspaceName: '${abbrs.monitorWorkspaces}${resourceToken}'
-//   }
-// }
 
 // Add outputs from the deployment here, if needed.
 //
@@ -209,3 +174,4 @@ output AZURE_TENANT_ID string = tenant().tenantId
 output AZURE_REGISTRY_NAME string = containerRegistry.outputs.name
 output AZURE_REGISTRY_URI string = containerRegistry.outputs.loginServer
 output AZURE_AKS_CLUSTER_NAME string = aks.outputs.clusterName
+output AZURE_AKS_CLUSTER_ID string = aks.outputs.clusterId
