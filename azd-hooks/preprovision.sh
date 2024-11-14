@@ -3,13 +3,13 @@
 echo "Ensuring Azure CLI extensions and dependencies are installed"
 
 # add azure cli extensions
-az extension add --upgrade --name aks-preview
+az extension add --upgrade --name aks-preview -allow-preview true
 
 az provider register --namespace "Microsoft.ContainerService"
-# while [[ $(az provider show --namespace "Microsoft.ContainerService" --query "registrationState" -o tsv) != "Registered" ]]; do
-#   echo "Waiting for Microsoft.ContainerService provider registration..."
-#   sleep 3
-# done
+while [[ $(az provider show --namespace "Microsoft.ContainerService" --query "registrationState" -o tsv) != "Registered" ]]; do
+  echo "Waiting for Microsoft.ContainerService provider registration..."
+  sleep 3
+done
 
 # # Register the preview features
 # az feature register --namespace Microsoft.ContainerService --name EnableAPIServerVnetIntegrationPreview
