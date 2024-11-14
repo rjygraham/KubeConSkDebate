@@ -91,8 +91,6 @@ resource aks 'Microsoft.ContainerService/managedClusters@2024-03-02-preview' = {
         name: 'systempool'
         mode: 'System'
         count: 3
-        vmSize: 'Standard_D4ds_v5'
-        availabilityZones: ['1','3']
       }
     ]
     addonProfiles: {

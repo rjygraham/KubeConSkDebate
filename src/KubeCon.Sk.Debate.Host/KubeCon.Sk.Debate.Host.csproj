@@ -7,7 +7,7 @@
 	<IsPublishable>true</IsPublishable>
     <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0</ContainerBaseImage>
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0.0-azurelinux3.0-arm64v8</ContainerBaseImage>
 	<ContainerRepository>kubecon-sk-debate/debate-host</ContainerRepository>
     <UserSecretsId>9fe144fe-2d4f-470a-978e-77fa1f0f5fcd</UserSecretsId>
   </PropertyGroup>

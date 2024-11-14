@@ -7,7 +7,7 @@
 	<IsPublishable>true</IsPublishable>
     <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
     <EnableSdkContainerDebugging>True</EnableSdkContainerDebugging>
-    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0</ContainerBaseImage>
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:9.0.0-azurelinux3.0-arm64v8</ContainerBaseImage>
 	<ContainerRepository>kubecon-sk-debate/default-agents</ContainerRepository>
     <UserSecretsId>a2648753-c610-4b7f-bb39-390f36af6a7e</UserSecretsId>
 	<NoWarn>$(NoWarn);CA2007;IDE1006;SKEXP0001;SKEXP0010;SKEXP0110;OPENAI001</NoWarn>
