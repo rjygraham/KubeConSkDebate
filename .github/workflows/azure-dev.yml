@@ -36,17 +36,17 @@ jobs:
         if: ${{ env.AZURE_CLIENT_ID != '' }}
         run: |
           azd auth login \
-            --client-id $ZURE_CLIENT_ID \
-            --federated-credential-provider "github" \
-            --tenant-id $AZURE_TENANT_ID
-
+            --tenant-id $AZURE_TENANT_ID \
+            --client-id $AZURE_CLIENT_ID \
+            --federated-credential-provider "github"
+            
       - name: Create azd env and modify script execute permissions
         run: |
           azd env new $AZURE_ENV_NAME
           chmod -R 777 ./azd-hooks
         env:
           AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
-          
+
       - name: Provision Infrastructure
         run: azd provision --debug # --no-prompt
 
