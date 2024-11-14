@@ -5,7 +5,7 @@ echo "Ensuring Azure CLI extensions and dependencies are installed"
 # add azure cli extensions
 az extension add --upgrade --name aks-preview
 
-# az provider register --namespace "Microsoft.ContainerService"
+az provider register --namespace "Microsoft.ContainerService"
 # while [[ $(az provider show --namespace "Microsoft.ContainerService" --query "registrationState" -o tsv) != "Registered" ]]; do
 #   echo "Waiting for Microsoft.ContainerService provider registration..."
 #   sleep 3
