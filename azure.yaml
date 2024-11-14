@@ -9,7 +9,7 @@ name: kubecon-sk-debate
 hooks:
   preprovision:
     shell: sh
-    run: azd-hooks/preprovision.sh
+    run: ./azd-hooks/preprovision.sh
 #   preprovision:
 #     posix:
 #       shell: sh
@@ -54,19 +54,27 @@ hooks:
 #       continueOnError: false
 #       interactive: false
 #       run: ./azd-hooks/postdeploy.ps1
-# infra:
-#   provider: bicep
-#   path: infra
-# services:
-#   debate-host:
-#     language: csharp
-#     project: ./src/KubeCon.Sk.Debate.Host
-#     host: aks
-#   leaderboard:
-#     language: csharp
-#     project: ./src/KubeCon.Sk.Debate.Leaderboard
-#     host: aks
-#   default-agents:
-#     language: csharp
-#     project: ./src/KubeCon.Sk.Debate.DefaultAgents
-#     host: aks
+infra:
+  provider: bicep
+  path: infra
+services:
+  debate-host:
+    project: ./src/KubeCon.Sk.Debate.Host
+    language: csharp
+    module: ./services/debate-host
+    host: aks
+    k8s:
+      ingress:
+        relativePath: api
+  # leaderboard:
+  #   language: csharp
+  #   project: ./src/KubeCon.Sk.Debate.Leaderboard
+  #   host: aks
+  # default-agents:
+  #   language: csharp
+  #   project: ./src/KubeCon.Sk.Debate.DefaultAgents
+  #   host: aks
+  # weirdo-agents:
+  #   language: csharp
+  #   project: ./src/KubeCon.Sk.Debate.WeirdoAgents
+  #   host: aks
