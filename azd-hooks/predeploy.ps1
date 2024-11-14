@@ -1,10 +1,6 @@
 #!/usr/bin/env pwsh
 
-# Check kubelogin and install if not exists
 
-if (-not (Get-Command kubelogin -ErrorAction SilentlyContinue)) {
-  az aks install-cli
-}
 
 # ###########################################################
 # # Create the custom-values.yaml file

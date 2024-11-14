@@ -162,6 +162,7 @@ module aks 'core/host/aks-automatic-cluster.bicep' = {
     }
     disableLocalAccounts: true
     azureRbac: true
+    principalId: principalId
     upgradeChannel: 'stable'
     nodeOSUpgradeChannel: 'NodeImage'
     supportPlan: 'KubernetesOfficial'
@@ -173,6 +174,7 @@ module aks 'core/host/aks-automatic-cluster.bicep' = {
           useAADAuth: 'true'
       }
     }
+    workspaceId: monitoring.outputs.logAnalyticsWorkspaceId
   }
 }
 
