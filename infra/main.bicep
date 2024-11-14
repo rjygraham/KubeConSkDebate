@@ -13,9 +13,6 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
-@description('PrincipalId of the principal executing AZD.')
-param principalId string
-
 // Optional parameters to override the default azd resource naming conventions.
 // Add the following to main.parameters.json to provide values:
 // "resourceGroupName": {
@@ -41,10 +38,10 @@ var resourceToken = toLower(uniqueString(subscription().id, environmentName, loc
 //   Microsoft.Web/sites for appservice, function
 // Example usage:
 //   tags: union(tags, { 'azd-service-name': apiServiceName })
-#disable-next-line no-unused-vars
-var debateHostName = 'debate-host'
-var leaderboarName = 'leaderboard'
-var defaultAgentsName = 'default-agents'
+// #disable-next-line no-unused-vars
+// var debateHostName = 'debate-host'
+// var leaderboarName = 'leaderboard'
+// var defaultAgentsName = 'default-agents'
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -136,7 +133,6 @@ module aks 'core/host/aks-automatic-cluster.bicep' = {
     }
     disableLocalAccounts: true
     azureRbac: true
-    principalId: principalId
     upgradeChannel: 'stable'
     nodeOSUpgradeChannel: 'NodeImage'
     supportPlan: 'KubernetesOfficial'
