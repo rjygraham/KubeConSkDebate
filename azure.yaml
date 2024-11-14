@@ -9,7 +9,7 @@ name: kubecon-sk-debate
 hooks:
   preprovision:
     shell: sh
-    run: echo 'hello world'
+    run: azd-hooks/preprovision.sh
 #   preprovision:
 #     posix:
 #       shell: sh
